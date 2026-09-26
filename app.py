@@ -1,3 +1,1 @@
-print("Hello IT")
-print("Cloud Engineer")
-print("Feature Branch")
+print("Conflict from master")
