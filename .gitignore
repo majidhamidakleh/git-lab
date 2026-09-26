@@ -1,4 +1,4 @@
 secret.txt
 .venv/
 __pycache__/
-
+monitor.log

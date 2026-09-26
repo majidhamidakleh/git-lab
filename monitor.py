@@ -2,6 +2,15 @@ import platform
 import os
 import psutil
 import socket
+from datetime import datetime
+import logging
+
+logging.basicConfig(
+    filename="monitor.log",
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
 
 
 def get_system_info():
@@ -15,10 +24,11 @@ def get_cpu_info():
 
     if cpu >= 80:
         print("CPU Status: WARNING")
-        return False
+        return False, cpu
+
     else:
         print("CPU Status: OK")
-        return True
+        return True, cpu
 
 
 def get_memory_info():
@@ -27,9 +37,10 @@ def get_memory_info():
 
     if memory.percent >= 80:
         print("RAM Status: WARNING")
+        return False, memory.percent
     else:
         print("RAM Status: OK")
-        return True
+        return True, memory.percent
 
 
 def get_disk_info():
@@ -38,9 +49,10 @@ def get_disk_info():
 
     if disk.percent >= 80:
         print("Disk Status: WARNING")
+        return False, disk.percent
     else:
         print("Disk Status: OK")
-        return True
+        return True, disk.percent
 
 def check_internet():
     try:
@@ -53,11 +65,17 @@ def check_internet():
         print("Internet Status: WARNING")
         return False
 
+print("Time:", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+
+logging.info("System monitoring started")
+
 get_system_info()
 
-cpu_ok = get_cpu_info()
-ram_ok = get_memory_info()
-disk_ok = get_disk_info()
+cpu_ok, cpu_usage = get_cpu_info()
+
+ram_ok, ram_usage = get_memory_info()
+disk_ok, disk_usage = get_disk_info()
 internet_ok = check_internet()
 
 print()
@@ -68,6 +86,20 @@ if cpu_ok and ram_ok and disk_ok and internet_ok:
     print("System Status: HEALTHY")
 else:
     print("System Status: WARNING")
+
+logging.info(f"CPU Usage: {cpu_usage}%")
+logging.info(f"RAM Usage: {ram_usage}%")
+logging.info(f"Disk Usage: {disk_usage}%")
+
+if internet_ok:
+    logging.info("Internet: Connected")
+else:
+    logging.warning("Internet: Not Connected")
+
+if cpu_ok and ram_ok and disk_ok and internet_ok:
+    logging.info("System status: HEALTHY")
+else:
+    logging.warning("System status: WARNING")
 
 
 
